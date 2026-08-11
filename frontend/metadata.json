@@ -1,0 +1,6 @@
+{
+  "name": "FastAPI Scaffold",
+  "description": "A backend scaffold using FastAPI and PostgreSQL, with a placeholder for a React frontend.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

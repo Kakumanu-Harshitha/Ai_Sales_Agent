@@ -1,0 +1,51 @@
+# Node / Frontend
+node_modules/
+build/
+dist/
+coverage/
+.vite/
+
+# Python / Backend
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+.env_local/
+
+# Environment Variables
+.env
+.env.*
+!.env.example
+
+# Credentials / Secrets
+credentials.json
+token.json
+*.pem
+
+# Databases
+*.sqlite
+*.sqlite3
+*.db
+setv_demo.db
+test_diag.db
+test_scheduler.db
+
+# Logs
+*.log
+logs/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.pytest_cache/
+.mypy_cache/
+
+# Temporary / Scratch files
+scratch/
+scratch_*.txt
+*.tmp
+*.bak
