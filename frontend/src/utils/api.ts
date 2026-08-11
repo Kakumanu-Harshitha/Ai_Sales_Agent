@@ -1,4 +1,4 @@
-export const API = 'http://localhost:8000';
+export const API = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 import { Lead } from '../types';
 export async function fetchJSON<T>(path: string): Promise<T | null> {
   try {
