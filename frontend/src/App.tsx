@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ProspectingPage from './app/prospecting/ProspectingPage';
 import SignalsPage from './app/signals/SignalsPage';
 import OutreachPage from './app/outreach/OutreachPage';
@@ -32,6 +32,15 @@ const WORKFLOW_NAV: NavItem[] = [
 
 export default function App() {
   const [page, setPage] = useState<Page>('dashboard');
+  const [mountedPages, setMountedPages] = useState<Partial<Record<Page, boolean>>>({
+    dashboard: true,
+  });
+
+  useEffect(() => {
+    if (!mountedPages[page]) {
+      setMountedPages(prev => ({ ...prev, [page]: true }));
+    }
+  }, [page, mountedPages]);
 
   return (
     <div className="app">
@@ -80,15 +89,51 @@ export default function App() {
 
       {/* ── Main ── */}
       <div className="main">
-        {page === 'dashboard'   && <DashboardPage onNavigate={(p) => setPage(p as Page)} />}
-        {page === 'agent'       && <AgentControlPage />}
-        {page === 'prospecting' && <ProspectingPage />}
-        {page === 'signals'     && <SignalsPage />}
-        {page === 'outreach'    && <OutreachPage />}
-        {page === 'replies'     && <ReplyHandlingPage />}
-        {page === 'meetings'    && <MeetingsPage />}
-        {page === 'crm'         && <CRMPage />}
-        {page === 'pipeline'    && <PipelinePage />}
+        {mountedPages.dashboard && (
+          <div style={{ display: page === 'dashboard' ? 'block' : 'none' }}>
+            <DashboardPage onNavigate={(p) => setPage(p as Page)} />
+          </div>
+        )}
+        {mountedPages.agent && (
+          <div style={{ display: page === 'agent' ? 'block' : 'none' }}>
+            <AgentControlPage />
+          </div>
+        )}
+        {mountedPages.prospecting && (
+          <div style={{ display: page === 'prospecting' ? 'block' : 'none' }}>
+            <ProspectingPage />
+          </div>
+        )}
+        {mountedPages.signals && (
+          <div style={{ display: page === 'signals' ? 'block' : 'none' }}>
+            <SignalsPage />
+          </div>
+        )}
+        {mountedPages.outreach && (
+          <div style={{ display: page === 'outreach' ? 'block' : 'none' }}>
+            <OutreachPage />
+          </div>
+        )}
+        {mountedPages.replies && (
+          <div style={{ display: page === 'replies' ? 'block' : 'none' }}>
+            <ReplyHandlingPage />
+          </div>
+        )}
+        {mountedPages.meetings && (
+          <div style={{ display: page === 'meetings' ? 'block' : 'none' }}>
+            <MeetingsPage />
+          </div>
+        )}
+        {mountedPages.crm && (
+          <div style={{ display: page === 'crm' ? 'block' : 'none' }}>
+            <CRMPage />
+          </div>
+        )}
+        {mountedPages.pipeline && (
+          <div style={{ display: page === 'pipeline' ? 'block' : 'none' }}>
+            <PipelinePage />
+          </div>
+        )}
       </div>
     </div>
   );
