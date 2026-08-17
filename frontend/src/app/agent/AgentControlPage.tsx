@@ -312,17 +312,19 @@ function StatusGoalTab({ settings, goal, systemLogs, onGoalSave, onSettingsUpdat
               <div>
                 <div style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: 4, fontWeight: 600 }}>System Status</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <span className={`agent-dot ${settings?.current_status === 'Running' ? 'running' : 'idle'}`} style={{ width: 12, height: 12 }} />
-                  <span style={{ fontSize: 24, fontWeight: 700 }}>{settings?.current_status || 'Unknown'}</span>
+                  <span className={`agent-dot ${settings?.enabled && settings?.current_status === 'Running' ? 'running' : 'idle'}`} style={{ width: 12, height: 12 }} />
+                  <span style={{ fontSize: 24, fontWeight: 700 }}>
+                    {!settings?.enabled ? 'OFF' : (settings?.current_status === 'OFF' ? 'Starting...' : (settings?.current_status || 'Unknown'))}
+                  </span>
                 </div>
-                {settings?.current_stage && (
+                {settings?.enabled && settings?.current_stage && (
                   <div style={{ fontSize: 13, color: 'var(--accent)', marginTop: 4 }}>Stage: {settings.current_stage}</div>
                 )}
               </div>
               <button
                 className={`btn ${settings?.enabled ? 'btn-red' : 'btn-primary'}`}
                 style={{ padding: '8px 16px', fontSize: 13 }}
-                onClick={() => onSettingsUpdate({ enabled: !settings?.enabled })}
+                onClick={() => onSettingsUpdate({ enabled: !settings?.enabled, current_status: !settings?.enabled ? 'Starting...' : 'OFF' })}
               >
                 {settings?.enabled ? '⏹ Stop Agent' : '▶ Start Agent'}
               </button>
@@ -334,7 +336,20 @@ function StatusGoalTab({ settings, goal, systemLogs, onGoalSave, onSettingsUpdat
               </div>
               <div>
                 <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Next Run</div>
-                <div style={{ fontSize: 13, fontWeight: 500 }}>{fmtDate(settings?.next_run) || 'N/A'}</div>
+                <div style={{ fontSize: 13, fontWeight: 500 }}>
+                  {(() => {
+                    if (!settings?.enabled) return 'Agent stopped';
+                    const now = Date.now();
+                    const intervalMs = (settings.interval_minutes || 10) * 60 * 1000;
+                    let next = settings.next_run ? new Date(settings.next_run.endsWith('Z') ? settings.next_run : settings.next_run + 'Z').getTime() : 0;
+                    if (!next || next < now) {
+                      const base = settings.last_run ? new Date(settings.last_run.endsWith('Z') ? settings.last_run : settings.last_run + 'Z').getTime() : now;
+                      next = base + intervalMs;
+                      while (next < now) next += intervalMs;
+                    }
+                    return fmtDate(new Date(next).toISOString());
+                  })()}
+                </div>
               </div>
             </div>
           </div>
@@ -395,11 +410,22 @@ function StatusGoalTab({ settings, goal, systemLogs, onGoalSave, onSettingsUpdat
           <h3 className="card-title" style={{ marginBottom: 16 }}>📋 Recent Activity</h3>
           <div style={{ background: '#0d1117', padding: 16, borderRadius: 8, border: '1px solid var(--border)', fontFamily: 'monospace', fontSize: 12, height: 250, overflowY: 'auto' }}>
             {systemLogs?.length > 0 ? (
-              systemLogs.map((log: string, i: number) => (
-                <div key={i} style={{ padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', color: log.includes('ERROR') || log.includes('WARNING') ? 'var(--red)' : 'var(--text-primary)' }}>
-                  {log}
-                </div>
-              ))
+              systemLogs.map((log: string, i: number) => {
+                const isErr = log.includes('ERROR');
+                const isWarn = log.includes('WARNING');
+                return (
+                  <div key={i} style={{ 
+                    padding: '4px 0', 
+                    borderBottom: '1px solid rgba(255,255,255,0.05)', 
+                    color: isErr ? '#ff7b72' : isWarn ? '#d2a8ff' : '#c9d1d9',
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
+                    lineHeight: 1.5
+                  }}>
+                    {log}
+                  </div>
+                );
+              })
             ) : (
               <div style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>No logs available yet. Start the agent to begin tracking.</div>
             )}
