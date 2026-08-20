@@ -79,7 +79,7 @@ export default function DashboardPage({ onNavigate }: DashboardProps) {
         ]);
 
         // Agent status
-        const agentSettings = await fetchJSON<any>('/orchestration/agent/settings');
+        const agentSettings = await fetchJSON<any>('/orchestration/settings');
         if (agentSettings) setAgentStatus(agentSettings.current_status || 'Idle');
 
         setMetrics({
