@@ -59,7 +59,8 @@ async def upload_file(file: UploadFile = File(...)):
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
     with open(filepath, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
-    return {"url": f"http://localhost:8000/static/uploads/{filename}"}
+    # Return a relative URL so it works seamlessly on both local and Render deployments
+    return {"url": f"/static/uploads/{filename}"}
 
 @router.get('/signatures')
 def list_signatures(db: Session = Depends(get_db)):

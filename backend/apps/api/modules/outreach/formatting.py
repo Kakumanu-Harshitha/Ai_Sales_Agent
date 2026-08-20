@@ -33,9 +33,9 @@ def _sanitize_url_for_preview(url: str) -> str:
         return ""
     url = url.strip()
     if url.startswith("http://") or url.startswith("https://"):
-        return url
+        return url.replace("http://localhost:8000", "https://ai-sales-agent-zgen.onrender.com")
     if url.startswith("/"):
-        return f"http://localhost:8000{url}"
+        return f"https://ai-sales-agent-zgen.onrender.com{url}"
     return url
 
 
@@ -50,14 +50,18 @@ def _sanitize_url_for_send(url: str, cid_prefix: str, inline_images: dict) -> st
     if "/static/uploads/" in url:
         filename = url.split("/static/uploads/")[-1].split("?")[0]
         local_path = os.path.join("static", "uploads", filename)
-        cid = f"{cid_prefix}_{filename}"
-        inline_images[cid] = local_path
-        return f"cid:{cid}"
+        if os.path.exists(local_path):
+            cid = f"{cid_prefix}_{filename}"
+            inline_images[cid] = local_path
+            return f"cid:{cid}"
+        else:
+            return f"https://ai-sales-agent-zgen.onrender.com/static/uploads/{filename}"
+
     # External URL — use as-is
     if url.startswith("http://") or url.startswith("https://"):
-        return url
+        return url.replace("http://localhost:8000", "https://ai-sales-agent-zgen.onrender.com")
     if url.startswith("/"):
-        return f"http://localhost:8000{url}"
+        return f"https://ai-sales-agent-zgen.onrender.com{url}"
     return url
 
 
