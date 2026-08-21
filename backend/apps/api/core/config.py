@@ -5,7 +5,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(extra="ignore", env_file=".env", env_file_encoding="utf-8")
     
     ENVIRONMENT: str = "dev"
-    DATABASE_URL: str = "postgresql://neondb_owner:npg_FfXp0dSIiR1U@ep-lucky-flower-aw03fi30.c-12.us-east-1.aws.neon.tech/neondb"
+    DATABASE_URL: str
 
     # AI Keys
     OPENAI_API_KEY: str | None = None
